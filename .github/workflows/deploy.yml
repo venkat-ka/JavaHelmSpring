@@ -26,7 +26,7 @@ jobs:
     - name: Docker Build
       run: |
           cd app
-          docker build -t --no-cache -t springboot-app .
+          docker build --no-cache -t springboot-app .
 
     - name: Login ECR
       run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 198413840424.dkr.ecr.ap-south-1.amazonaws.com
