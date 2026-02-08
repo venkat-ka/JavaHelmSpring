@@ -36,10 +36,12 @@ jobs:
         docker tag springboot-app:latest 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:latest
         docker push 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:latest
 
-    - name: Helm Deploy
-      run: helm upgrade springboot-app helm/springboot
-
     - name: Configure kubectl
       run: |
           aws eks update-kubeconfig --region ap-south-1 --name java-cluster
           kubectl get nodes 
+          
+    - name: Helm Deploy
+      run: helm upgrade springboot-app helm/springboot
+
+    
