@@ -1,5 +1,0 @@
-replicaCount: 2
-
-image:
- repository: your-ecr/springboot-demo
- tag: latest

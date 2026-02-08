@@ -1,0 +1,4 @@
+image:
+ repository: <ACCOUNT>.dkr.ecr.<REGION>.amazonaws.com/javahelmspring
+ tag: latest
+replicaCount: 2
