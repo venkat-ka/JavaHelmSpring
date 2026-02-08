@@ -11,6 +11,6 @@ public class JavaHelmSpringApplication {
  }
  @GetMapping("/")
  public String home(){
-   return "JavaHelmSpring running on EKS";
+   return "Updated JavaHelmSpring running on EKS";
  }
 }

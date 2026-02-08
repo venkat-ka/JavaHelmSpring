@@ -24,7 +24,9 @@ jobs:
           mvn clean package -DskipTests
 
     - name: Docker Build
-      run: docker build -t springboot-app .
+      run: |
+          cd app
+          docker build -t springboot-app .
 
     - name: Login ECR
       run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 198413840424.dkr.ecr.ap-south-1.amazonaws.com
