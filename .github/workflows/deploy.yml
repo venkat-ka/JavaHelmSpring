@@ -33,8 +33,11 @@ jobs:
 
     - name: Push Image
       run: |
-        docker tag springboot-app:latest 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:latest
-        docker push 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:latest
+        cd app
+        IMAGE_TAG=${GITHUB_SHA}
+        docker tag springboot-app:latest 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:$IMAGE_TAG
+        docker push 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:$IMAGE_TAG
+        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
     - name: Configure kubectl
       run: |
@@ -42,6 +45,6 @@ jobs:
           kubectl get nodes 
 
     - name: Helm Deploy
-      run: helm upgrade springboot-app helm/springboot
+      run: helm upgrade springboot-app helm/springboot --set image.tag=${IMAGE_TAG}
 
     
