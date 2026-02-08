@@ -45,7 +45,9 @@ jobs:
           kubectl get nodes 
 
     - name: Helm Deploy
-      run: helm upgrade springboot-app helm/springboot --set image.tag=${IMAGE_TAG}
+      run: helm upgrade springboot-app helm/springboot --set image.tag=${IMAGE_TAG} \
+           --atomic \
+           --timeout 3m
 
     
     - name: Debug Image Tag
