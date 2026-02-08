@@ -19,7 +19,9 @@ jobs:
         aws-region: ap-south-1
 
     - name: Build Jar
-      run: mvn clean package -DskipTests
+      run: |
+          cd app 
+          mvn clean package -DskipTests
 
     - name: Docker Build
       run: docker build -t springboot-app .
