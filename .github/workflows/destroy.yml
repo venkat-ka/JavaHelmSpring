@@ -1,0 +1,100 @@
+name: Destroy AWS Infrastructure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region ap-south-1 --name java-cluster
+
+      ###################################################
+      # 1. DELETE K8S SERVICES (LoadBalancers)
+      ###################################################
+      - name: Delete Services
+        run: |
+          kubectl delete svc springboot-app --ignore-not-found
+          kubectl delete svc test-nginx --ignore-not-found
+
+      ###################################################
+      # 2. DELETE HELM RELEASES
+      ###################################################
+      - name: Delete Helm
+        run: |
+          helm uninstall springboot-app || true
+          helm uninstall test-nginx || true
+
+      ###################################################
+      # 3. DELETE NODEGROUP
+      ###################################################
+      - name: Delete NodeGroup
+        run: |
+          aws eks delete-nodegroup \
+            --cluster-name java-cluster \
+            --nodegroup-name java-nodegroup \
+            --region ap-south-1
+
+      - name: Wait NodeGroup
+        run: |
+          aws eks wait nodegroup-deleted \
+            --cluster-name java-cluster \
+            --nodegroup-name java-nodegroup \
+            --region ap-south-1
+
+      ###################################################
+      # 4. DELETE ADDON
+      ###################################################
+      - name: Delete CloudWatch Addon
+        run: |
+          aws eks delete-addon \
+            --cluster-name java-cluster \
+            --addon-name amazon-cloudwatch-observability \
+            --region ap-south-1
+
+      ###################################################
+      # 5. DELETE CLUSTER
+      ###################################################
+      - name: Delete Cluster
+        run: |
+          aws eks delete-cluster \
+            --name java-cluster \
+            --region ap-south-1
+
+      - name: Wait Cluster
+        run: |
+          aws eks wait cluster-deleted \
+            --name java-cluster \
+            --region ap-south-1
+
+      ###################################################
+      # 6. DELETE ECR
+      ###################################################
+      - name: Delete ECR
+        run: |
+          aws ecr delete-repository \
+            --repository-name springboot-app \
+            --force \
+            --region ap-south-1
+
+      ###################################################
+      # 7. DELETE CLOUDWATCH LOGS
+      ###################################################
+      - name: Delete Logs
+        run: |
+          aws logs delete-log-group --log-group-name /eks/springboot || true
+
+      ###################################################
+      # DONE
+      ###################################################
+      - name: Completed
+        run: echo "🔥 AWS fully destroyed. Billing stopped."
