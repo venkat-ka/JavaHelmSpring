@@ -26,7 +26,7 @@ jobs:
     - name: Docker Build
       run: |
           cd app
-          docker build -t springboot-app .
+          docker build -t --no-cache -t springboot-app .
 
     - name: Login ECR
       run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 198413840424.dkr.ecr.ap-south-1.amazonaws.com
@@ -40,7 +40,7 @@ jobs:
       run: |
           aws eks update-kubeconfig --region ap-south-1 --name java-cluster
           kubectl get nodes 
-          
+
     - name: Helm Deploy
       run: helm upgrade springboot-app helm/springboot
 
