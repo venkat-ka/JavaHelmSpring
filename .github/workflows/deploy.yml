@@ -48,3 +48,5 @@ jobs:
       run: helm upgrade springboot-app helm/springboot --set image.tag=${IMAGE_TAG}
 
     
+    - name: Debug Image Tag
+      run: echo "IMAGE_TAG is $IMAGE_TAG"
