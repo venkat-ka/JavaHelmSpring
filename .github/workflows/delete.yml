@@ -1,0 +1,53 @@
+name: Delete AWS Resources
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Delete Helm Releases
+        run: |
+          helm uninstall springboot-app || true
+          helm uninstall test-nginx || true
+
+      - name: Delete EKS Addon
+        run: |
+          aws eks delete-addon \
+            --cluster-name java-cluster \
+            --addon-name amazon-cloudwatch-observability \
+            --region ap-south-1 || true
+
+      - name: Delete NodeGroup
+        run: |
+          aws eks delete-nodegroup \
+            --cluster-name java-cluster \
+            --nodegroup-name java-nodegroup \
+            --region ap-south-1 || true
+
+      - name: Delete EKS Cluster
+        run: |
+          aws eks delete-cluster \
+            --name java-cluster \
+            --region ap-south-1 || true
+
+      - name: Delete ECR Repository
+        run: |
+          aws ecr delete-repository \
+            --repository-name springboot-app \
+            --force \
+            --region ap-south-1 || true
+
+      - name: Delete CloudWatch Logs
+        run: |
+          aws logs delete-log-group --log-group-name /eks/springboot || true
+          aws logs delete-log-group --log-group-name /aws/containerinsights/java-cluster/application || true
