@@ -12,6 +12,6 @@ public class JavaHelmSpringApplication {
  @GetMapping("/")
  public String home(){
    System.out.println("SpringBoot request received");
-   return "Starting Feb 14 Updated third JavaHelmSpring running on rend EKS";
+   return "Starting Feb 14 Updates third JavaHelmSpring running on rend EKS";
  }
 }
