@@ -2,13 +2,17 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: springboot-cluster
+  name: java-cluster
   region: ap-south-1
 
+vpc:
+  nat:
+    gateway: Disable
+
 managedNodeGroups:
-  - name: ng-lowcost
-    instanceType: t3.micro       # smallest usable
-    desiredCapacity: 2          # ONLY 1 node
+  - name: java-nodegroup
+    instanceType: t3.small      # smallest usable
+    desiredCapacity: 1          # ONLY 1 node
     minSize: 0                  # allow scale to zero
     maxSize: 2
     volumeSize: 20
