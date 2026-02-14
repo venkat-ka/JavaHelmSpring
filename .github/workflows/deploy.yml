@@ -26,7 +26,7 @@ jobs:
     - name: Docker Build
       run: |
           cd app
-          docker build --no-cache -t springboot-app .
+          docker build --no-cache -t springboot-app:${GITHUB_SHA}  .
 
     - name: Login ECR
       run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 198413840424.dkr.ecr.ap-south-1.amazonaws.com
@@ -35,7 +35,7 @@ jobs:
       run: |
         cd app
         IMAGE_TAG=${GITHUB_SHA}
-        docker tag springboot-app:latest 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:$IMAGE_TAG
+        docker tag springboot-app:${IMAGE_TAG} 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:$IMAGE_TAG
         docker push 198413840424.dkr.ecr.ap-south-1.amazonaws.com/springboot-app:$IMAGE_TAG
         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
